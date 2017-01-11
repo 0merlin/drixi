@@ -1,33 +1,12 @@
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Ignore build generated files
+build/
+dist/
+dist.zip
 
-# Precompiled Headers
-*.gch
-*.pch
+# Ignore waf lock file
+.lock-waf*
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Ignore installed node modules
+node_modules/
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
+.DS_Store

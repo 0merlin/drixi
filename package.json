@@ -1,0 +1,43 @@
+{
+  "name": "drixi",
+  "author": "Merlin",
+  "version": "1.4.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "projectType": "native",
+    "capabilities": [
+      "location",
+      "health"
+    ],
+    "displayName": "Drixi",
+    "uuid": "c1d1a3c4-021e-42d3-9ec8-161bc1f9c5ae",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "basalt"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "messageKeys": [
+      "PhoneBattery",
+      "PhoneBatteryCharging"
+    ],
+    "resources": {
+      "media": [
+        {
+          "file": "fonts/leco.ttf",
+          "name": "LECO_15",
+          "targetPlatforms": [
+            "basalt"
+          ],
+          "type": "font"
+        }
+      ]
+    }
+  }
+}
