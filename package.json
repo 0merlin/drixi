@@ -36,6 +36,14 @@
             "basalt"
           ],
           "type": "font"
+        },
+        {
+          "file": "fonts/leco.ttf",
+          "name": "LECO_42",
+          "targetPlatforms": [
+            "basalt"
+          ],
+          "type": "font"
         }
       ]
     }
