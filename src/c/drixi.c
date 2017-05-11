@@ -178,6 +178,10 @@ static void main_window_load(Window *window)
   // Get information about the Window
   Layer *window_layer = window_get_root_layer(window);
 
+  top_middle = text_layer_create(GRect(0, 56, 144, 40));
+  text_layer_set_font(top_middle, fonts_get_system_font(FONT_KEY_LECO_38_BOLD_NUMBERS));
+  add_text_layer(window_layer, top_middle, GTextAlignmentCenter);
+
   // Create clock Layer
   clock_layer = layer_create(GRect(0, 20, 144, 126));
   layer_set_update_proc(clock_layer, clock_update_proc);
@@ -186,10 +190,6 @@ static void main_window_load(Window *window)
   battery_layer = layer_create(GRect(104, 0, 144, 20));
   layer_set_update_proc(battery_layer, battery_layer_update_proc);
   layer_add_child(window_layer, battery_layer);
-
-  top_middle = text_layer_create(GRect(0, 0, 144, 20));
-  text_layer_set_font(top_middle, fonts_get_system_font(FONT_KEY_LECO_20_BOLD_NUMBERS));
-  add_text_layer(window_layer, top_middle, GTextAlignmentCenter);
 
   s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_LECO_15));
 
@@ -301,6 +301,9 @@ static void clock_update_proc(Layer *layer, GContext *ctx)
   // draw hour
   graphics_context_set_stroke_color(ctx, GColorVividCerulean);
   draw_line(ctx, hour_hand, true);
+
+
+  graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 15, 0, (1.0*current_steps/steps_day_average) * DEG_TO_TRIGANGLE(360));
 }
 
 static void draw_line(GContext *ctx, int line, bool inner)
@@ -352,8 +355,9 @@ static void update_watch()
   current_steps = (int)health_service_sum_today(HealthMetricStepCount);
 
   format_number(steps_buffer, sizeof(steps_buffer), current_steps);
+  text_layer_set_text(top_left, date_buffer);
+  text_layer_set_text(top_middle, s_time);
   if (!flick_showing) {
-    text_layer_set_text(top_middle, s_time);
     text_layer_set_text(bottom_left, steps_buffer);
   }
 }
@@ -379,9 +383,6 @@ static void show_text()
   // steps_average_now = (int)health_service_sum_averaged(HealthMetricStepCount, start, time(NULL), HealthServiceTimeScopeDailyWeekdayOrWeekend);
   // if (steps_average_now < 1) steps_average_now = STEPS_DEFAULT;
 
-  text_layer_set_text(top_middle, NULL);
-  text_layer_set_text(top_left, date_buffer);
-
   format_number(steps_buffer, sizeof(steps_buffer), current_steps);
   format_number(steps_avg_buffer, sizeof(steps_avg_buffer), steps_day_average);
   static char tmp_str[25];
@@ -400,10 +401,8 @@ static void show_text()
 static void hide_text()
 {
   flick_showing = false;
-  text_layer_set_text(top_left, NULL);
   text_layer_set_text(bottom_right, NULL);
 
-  text_layer_set_text(top_middle, s_time);
   format_number(steps_buffer, sizeof(steps_buffer), current_steps);
   text_layer_set_text(bottom_left, steps_buffer);
 }
