@@ -1,7 +1,7 @@
 {
   "name": "drixi",
   "author": "Merlin",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "keywords": [
     "pebble-app"
   ],
@@ -30,16 +30,8 @@
     "resources": {
       "media": [
         {
-          "file": "fonts/leco.ttf",
+          "file": "fonts/leco_bold.ttf",
           "name": "LECO_15",
-          "targetPlatforms": [
-            "basalt"
-          ],
-          "type": "font"
-        },
-        {
-          "file": "fonts/leco.ttf",
-          "name": "LECO_42",
           "targetPlatforms": [
             "basalt"
           ],

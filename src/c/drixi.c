@@ -91,7 +91,7 @@ static AppSync s_sync;
 
 static Window *s_main_window;
 
-static Layer *clock_layer, *battery_layer;
+static Layer *clock_layer, *steps_layer, *battery_layer;
 
 static GFont s_time_font;
 
@@ -108,6 +108,7 @@ static void add_text_layer(Layer *window_layer, TextLayer *text_layer, GTextAlig
 static void battery_callback(BatteryChargeState state);
 static void bluetooth_callback(bool connected);
 static void clock_update_proc(Layer *layer, GContext *ctx);
+static void steps_update_proc(Layer *layer, GContext *ctx);
 static void battery_layer_update_proc(Layer *layer, GContext *ctx);
 static void draw_line(GContext *ctx, int line, bool inner);
 static void format_number(char *str, int size, int number);
@@ -178,14 +179,18 @@ static void main_window_load(Window *window)
   // Get information about the Window
   Layer *window_layer = window_get_root_layer(window);
 
-  top_middle = text_layer_create(GRect(0, 56, 144, 40));
-  text_layer_set_font(top_middle, fonts_get_system_font(FONT_KEY_LECO_38_BOLD_NUMBERS));
-  add_text_layer(window_layer, top_middle, GTextAlignmentCenter);
-
   // Create clock Layer
+  steps_layer = layer_create(layer_get_bounds(window_layer));
+  layer_set_update_proc(steps_layer, steps_update_proc);
+  layer_add_child(window_layer, steps_layer);
+
   clock_layer = layer_create(GRect(0, 20, 144, 126));
   layer_set_update_proc(clock_layer, clock_update_proc);
   layer_add_child(window_layer, clock_layer);
+
+  top_middle = text_layer_create(GRect(0, 56, 144, 40));
+  text_layer_set_font(top_middle, fonts_get_system_font(FONT_KEY_LECO_38_BOLD_NUMBERS));
+  add_text_layer(window_layer, top_middle, GTextAlignmentCenter);
 
   battery_layer = layer_create(GRect(104, 0, 144, 20));
   layer_set_update_proc(battery_layer, battery_layer_update_proc);
@@ -218,6 +223,8 @@ static void main_window_unload(Window *window)
   text_layer_destroy(bottom_left);
   text_layer_destroy(bottom_right);
   layer_destroy(clock_layer);
+  layer_destroy(steps_layer);
+  layer_destroy(battery_layer);
   fonts_unload_custom_font(s_time_font);
 }
 
@@ -274,6 +281,18 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   update_watch();
 }
 
+static void steps_update_proc(Layer *layer, GContext *ctx)
+{
+  GRect bounds = layer_get_bounds(layer);
+
+  if (current_steps >= steps_day_average) {
+    graphics_context_set_fill_color(ctx, GColorIslamicGreen);
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 3, 0, DEG_TO_TRIGANGLE(360));
+  } else {
+    graphics_context_set_fill_color(ctx, GColorPurple);
+    graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 3, 0, (1.0*current_steps/steps_day_average) * DEG_TO_TRIGANGLE(360));
+  }
+}
 static void clock_update_proc(Layer *layer, GContext *ctx)
 {
   // draw background
@@ -301,9 +320,6 @@ static void clock_update_proc(Layer *layer, GContext *ctx)
   // draw hour
   graphics_context_set_stroke_color(ctx, GColorVividCerulean);
   draw_line(ctx, hour_hand, true);
-
-
-  graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 15, 0, (1.0*current_steps/steps_day_average) * DEG_TO_TRIGANGLE(360));
 }
 
 static void draw_line(GContext *ctx, int line, bool inner)
@@ -349,6 +365,7 @@ static void update_watch()
     hour_hand = th;
     minute_hand = tm;
     layer_mark_dirty(clock_layer);
+    layer_mark_dirty(steps_layer);
   }
 
 
