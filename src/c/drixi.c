@@ -346,6 +346,7 @@ static void update_watch()
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
   static int th,tm,c,m;
+  int start = time_start_of_today();
 
   m = tick_time->tm_min;
 
@@ -371,6 +372,9 @@ static void update_watch()
 
   current_steps = (int)health_service_sum_today(HealthMetricStepCount);
 
+  steps_day_average = (int)health_service_sum_averaged(HealthMetricStepCount, start, start + SECONDS_PER_DAY, HealthServiceTimeScopeDailyWeekdayOrWeekend);
+  if (steps_day_average < 1) steps_day_average = STEPS_DEFAULT;
+
   format_number(steps_buffer, sizeof(steps_buffer), current_steps);
   text_layer_set_text(top_left, date_buffer);
   text_layer_set_text(top_middle, s_time);
@@ -391,11 +395,6 @@ static void show_text()
 {
   if (flick_showing) return;
   flick_showing = true;
-
-  int start = time_start_of_today();
-
-  steps_day_average = (int)health_service_sum_averaged(HealthMetricStepCount, start, start + SECONDS_PER_DAY, HealthServiceTimeScopeDailyWeekdayOrWeekend);
-  if (steps_day_average < 1) steps_day_average = STEPS_DEFAULT;
 
   // steps_average_now = (int)health_service_sum_averaged(HealthMetricStepCount, start, time(NULL), HealthServiceTimeScopeDailyWeekdayOrWeekend);
   // if (steps_average_now < 1) steps_average_now = STEPS_DEFAULT;
